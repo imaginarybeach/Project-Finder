@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root"; // Default username for MAMP
 $password = "root"; // Default password for MAMP
-$dbname = "my_website_db";
+$dbname = "Project-Finder";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
