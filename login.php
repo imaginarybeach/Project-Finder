@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!empty($username) && !empty($password)) {
         // Prepare and execute query
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt = $conn->prepare("SELECT * FROM `student-users` WHERE `id` = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
