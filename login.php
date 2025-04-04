@@ -1,6 +1,6 @@
 <?php
 // Include the database connection file
-require_once 'db.php';
+//require_once 'db.php'; fahdjskafhjdksaf
 
 // Start session
 session_start();
@@ -9,7 +9,7 @@ session_start();
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
+    $username = trim($_POST['id']);
     $password = trim($_POST['password']);
 
     if (!empty($username) && !empty($password)) {
