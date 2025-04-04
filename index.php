@@ -1,3 +1,8 @@
+<?<php>
+include 'navbar.php';
+
+</php>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,7 +54,7 @@
             <a href="dashboard.php" style="text-decoration: none;">
             <button style="background-color: #6D6F9A; color: white; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold;">Browse Projects</button>
             </a>
-            <a href="projects.php" style="text-decoration: none;">
+            <a href="myprofile.php" style="text-decoration: none;">
             <button style="background-color: #585A7C; color: white; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold;">My Profile</button>
             </a>
         </div>

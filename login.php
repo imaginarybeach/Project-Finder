@@ -1,7 +1,4 @@
 <?php
-// Include the database connection file
-//require_once 'db.php'; fahdjskafhjdksaf
-
 // Start session
 session_start();
 
@@ -9,33 +6,22 @@ session_start();
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['id']);
+    $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
+    // Hardcoded credentials for testing
+    $valid_username = 'testuser';
+    $valid_password = 'testpassword';
+
     if (!empty($username) && !empty($password)) {
-        // Prepare and execute query
-        $stmt = $conn->prepare("SELECT * FROM `student-users` WHERE `id` = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows === 1) {
-            $user = $result->fetch_assoc();
-
-            // Verify password
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                header("Location: dashboard.php");
-                exit;
-            } else {
-                $error = "Invalid username or password.";
-            }
+        if ($username === $valid_username && $password === $valid_password) {
+            $_SESSION['user_id'] = 1; // Example user ID
+            $_SESSION['username'] = $username;
+            header("Location: myprofile.php");
+            exit;
         } else {
             $error = "Invalid username or password.";
         }
-
-        $stmt->close();
     } else {
         $error = "Please fill in all fields.";
     }
