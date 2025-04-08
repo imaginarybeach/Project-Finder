@@ -7,35 +7,38 @@ session_start();
 
 // Initialize variables
 $error = '';
+$success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
+    $email = trim($_POST['email']);
 
-    if (!empty($username) && !empty($password)) {
-        // Prepare and execute query
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
+    if (!empty($username) && !empty($password) && !empty($email)) {
+        // Check if the username or email already exists
+        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
+        $stmt->bind_param("ss", $username, $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if ($result->num_rows === 1) {
-            $user = $result->fetch_assoc();
+        if ($result->num_rows === 0) {
+            // Hash the password
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-            // Verify password
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                header("Location: dashboard.php");
-                exit;
+            // Insert the new user into the database
+            $stmt = $conn->prepare("INSERT INTO users (username, password, email) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $username, $hashedPassword, $email);
+
+            if ($stmt->execute()) {
+                $success = "Account created successfully. You can now log in.";
             } else {
-                $error = "Invalid username or password.";
+                $error = "Error creating account. Please try again.";
             }
-        } else {
-            $error = "Invalid username or password.";
-        }
 
-        $stmt->close();
+            $stmt->close();
+        } else {
+            $error = "Username or email already exists.";
+        }
     } else {
         $error = "Please fill in all fields.";
     }
@@ -47,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Register</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -60,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             height: 100vh;
         }
 
-        .login-container {
+        .register-container {
             background: #ffffff;
             padding: 20px 30px;
             border-radius: 8px;
@@ -69,25 +72,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 300px;
         }
 
-        .login-container h2 {
+        .register-container h2 {
             font-size: 2rem;
             margin-bottom: 20px;
             color: #333;
         }
 
-        .login-container form {
+        .register-container form {
             display: flex;
             flex-direction: column;
         }
 
-        .login-container label {
+        .register-container label {
             margin-bottom: 5px;
             text-align: left;
             font-size: 0.9rem;
             color: #555;
         }
 
-        .login-container input {
+        .register-container input {
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
@@ -95,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 1rem;
         }
 
-        .login-container button {
+        .register-container button {
             padding: 10px;
             background-color: #9092C8;
             color: #fff;
@@ -105,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             cursor: pointer;
         }
 
-        .login-container button:hover {
+        .register-container button:hover {
             background-color: #8082B4;
         }
 
@@ -114,20 +117,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 15px;
             font-size: 0.9rem;
         }
+
+        .success-message {
+            color: green;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Log In</h2>
+    <div class="register-container">
+        <h2>Register</h2>
         <?php if ($error): ?>
             <p class="error-message"><?php echo htmlspecialchars($error); ?></p>
+        <?php endif; ?>
+        <?php if ($success): ?>
+            <p class="success-message"><?php echo htmlspecialchars($success); ?></p>
         <?php endif; ?>
         <form method="POST" action="">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
-            <button type="submit">Login</button>
+            <button type="submit">Register</button>
         </form>
     </div>
 </body>
