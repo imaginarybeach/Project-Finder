@@ -1,0 +1,25 @@
+/* Applying the fonts */
+body {
+    font-family: Georgia, 'Times New Roman', Times, serif; /* Elegant serif font */
+    color: #333;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-weight: 700;
+}
+
+p, a, li, span {
+    font-family: 'Roboto', sans-serif; /* Clean sans-serif font for readability */
+}
+.listing-content {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+.listing-content {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }

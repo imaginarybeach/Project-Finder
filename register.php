@@ -12,32 +12,37 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
+    $verifyPassword = trim($_POST['verify_password']);
     $email = trim($_POST['email']);
 
-    if (!empty($username) && !empty($password) && !empty($email)) {
-        // Check if the username or email already exists
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
-        $stmt->bind_param("ss", $username, $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    if (!empty($username) && !empty($password) && !empty($verifyPassword) && !empty($email)) {
+        if ($password === $verifyPassword) {
+            // Check if the username or email already exists
+            $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
+            $stmt->bind_param("ss", $username, $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-        if ($result->num_rows === 0) {
-            // Hash the password
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            if ($result->num_rows === 0) {
+                // Hash the password
+                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-            // Insert the new user into the database
-            $stmt = $conn->prepare("INSERT INTO users (username, password, email) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $username, $hashedPassword, $email);
+                // Insert the new user into the database
+                $stmt = $conn->prepare("INSERT INTO users (username, password, email) VALUES (?, ?, ?)");
+                $stmt->bind_param("sss", $username, $hashedPassword, $email);
 
-            if ($stmt->execute()) {
-                $success = "Account created successfully. You can now log in.";
+                if ($stmt->execute()) {
+                    $success = "Account created successfully. You can now log in.";
+                } else {
+                    $error = "Error creating account. Please try again.";
+                }
+
+                $stmt->close();
             } else {
-                $error = "Error creating account. Please try again.";
+                $error = "Username or email already exists.";
             }
-
-            $stmt->close();
         } else {
-            $error = "Username or email already exists.";
+            $error = "Passwords do not match.";
         }
     } else {
         $error = "Please fill in all fields.";
@@ -141,6 +146,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="email" id="email" name="email" required>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
+            <label for="verify_password">Verify Password:</label>
+            <input type="password" id="verify_password" name="verify_password" required>
             <button type="submit">Register</button>
         </form>
     </div>

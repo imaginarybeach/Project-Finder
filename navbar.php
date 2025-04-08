@@ -2,8 +2,7 @@
 <div class="navbar">
     <a href="myprofile.php">Profile</a>
     <a href="dashboard.php">Find Projects</a>
-    <a href="login.php">Log In</a>
-    <a href="register.php">Register</a>
+    <a href="logout.php">Log Out</a>
 </div>
 
 <style>
