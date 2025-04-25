@@ -101,6 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 15px;
             font-size: 0.9rem;
         }
+        
     </style>
 </head>
 <body>
