@@ -1,8 +1,8 @@
 <?php
-$servername = "localhost";
-$port = 8889; //port to MySQL
-$username = "root"; // Default username for MAMP
-$password = "root"; // Default password for MAMP
+$servername = "db"; // Use the service name from docker-compose
+$port = 3306;       // Default MySQL port inside container
+$username = "root";
+$password = "root";
 $dbname = "Project-Finder";
 
 // Create connection
@@ -25,7 +25,6 @@ if ($result->num_rows > 0) {
 } else {
     echo "No results found";
 }
-
 
 $conn->close();
 ?>

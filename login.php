@@ -1,32 +1,51 @@
 <?php
 // Start session
-
 session_start();
 
 // Initialize variables
 $error = '';
 
+// Database connection
+$host = 'db'; // Change if your database is hosted elsewhere
+$dbname = 'Project_Finder'; // Replace with your database name
+$dbuser = 'root'; // Replace with your database username
+$dbpass = 'root'; // Replace with your database password
+
+$conn = new mysqli($host, $dbuser, $dbpass, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
-    // Hardcoded credentials for testing
-    $valid_username = 'testuser';
-    $valid_password = 'testpassword';
-
     if (!empty($username) && !empty($password)) {
-        if ($username === $valid_username && $password === $valid_password) {
-            $_SESSION['user_id'] = 1; // Example user ID
-            $_SESSION['username'] = $username;
+        // Query to check user credentials
+        $stmt = $conn->prepare("SELECT id, username FROM users WHERE username = ? AND password = ?");
+        $stmt->bind_param("ss", $username, $password);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
             header("Location: dashboard.php");
             exit;
         } else {
             $error = "Invalid username or password.";
         }
+
+        $stmt->close();
     } else {
         $error = "Please fill in all fields.";
     }
 }
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
