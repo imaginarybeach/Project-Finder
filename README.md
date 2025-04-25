@@ -1,3 +1,3 @@
 # Project-Finder
  SE 4347.001 Database Systems
- Katy Soddy, [guys put ur names here]
+ Katy Soddy, William Lamparter, [put additional names here]
