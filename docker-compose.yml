@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - .:/var/www/html
+      - /Users/katy/Documents/GitHub/Project-Finder:/var/www/html # Mount the correct directory containing your PHP files
     depends_on:
       - db
     command: >
@@ -18,22 +18,12 @@ services:
     ports:
       - "8889:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: rooty
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"  # Not needed if you set a root password
       MYSQL_DATABASE: Project-Finder
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
     volumes:
-      - ./sql:/docker-entrypoint-initdb.d
-      - mysql_data:/var/lib/mysql
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: project_finder_phpmyadmin
-    ports:
-      - "8081:80"
-    environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: root
+      - ./sql:/docker-entrypoint-initdb.d # Keep this for database initialization scripts
+      - mysql_data:/var/lib/mysql # Define the named volume here
 
 volumes:
-  mysql_data:
+  mysql_data: # Define the named volume here
