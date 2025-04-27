@@ -18,24 +18,24 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
-    $password = trim($_POST['password']);
+    $username = trim($_POST['Email']); // Use email as the username
+    $password = trim($_POST['NetID']); // Use NetID as the password
 
     if (!empty($username) && !empty($password)) {
         // Query to check user credentials
-        $stmt = $conn->prepare("SELECT id, username FROM users WHERE username = ? AND password = ?");
+        $stmt = $conn->prepare("SELECT NetID, Email FROM mytable WHERE Email = ? AND NetID = ?");
         $stmt->bind_param("ss", $username, $password);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
+            $_SESSION['NetID'] = $user['NetID'];
+            $_SESSION['Email'] = $user['Email'];
             header("Location: dashboard.php");
             exit;
         } else {
-            $error = "Invalid username or password.";
+            $error = "Invalid email or NetID.";
         }
 
         $stmt->close();
@@ -128,11 +128,11 @@ $conn->close();
         <?php if ($error): ?>
             <p class="error-message"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
-        <form method="POST" action="">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+        <form method="POST" action="login.php">
+            <label for="Email">Username:</label>
+            <input type="text" id="Email" name="Email" required>
+            <label for="NetID">Password:</label>
+            <input type="password" id="NetID" name="NetID" required>
             <button type="submit">Login</button>
         </form>
     </div>
