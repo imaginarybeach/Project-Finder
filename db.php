@@ -1,6 +1,6 @@
 <?php
-$servername = "db"; // Use the service name from docker-compose
-$port = 3306;       // Default MySQL port inside container
+$servername = "localhost"; // Use localhost if running MySQL on the same machine
+$port = 3306; // Default MySQL port
 $username = "root";
 $password = "root";
 $dbname = "Project-Finder";

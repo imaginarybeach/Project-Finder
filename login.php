@@ -6,7 +6,7 @@ session_start();
 $error = '';
 // Database connection
 $host = 'db'; // Use 'localhost' if the database is hosted locally
-$dbname = 'project-finder'; // Replace with your database name
+$dbname = 'Project-Finder'; // Replace with your database name
 $dbuser = 'root'; // Root user of the database
 $dbpass = 'rooty'; // Replace with the root user's password (leave empty if no password is set)
 
@@ -16,7 +16,6 @@ $conn = new mysqli($host, $dbuser, $dbpass, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-echo "Connected successfully!";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
