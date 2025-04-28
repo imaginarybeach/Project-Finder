@@ -6,7 +6,7 @@ CREATE TABLE STUDENT (
       LENGTH(Pass) BETWEEN 10 AND 50 AND
       Pass NOT LIKE '%,%' AND
       Pass NOT LIKE '%#%'
-)
+    )
     Email VARCHAR(255) NOT NULL,
     Phone VARCHAR(15),
     Name VARCHAR(255) NOT NULL,
