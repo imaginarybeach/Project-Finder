@@ -18,13 +18,18 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['Email']); // Use email as the username
-    $password = trim($_POST['NetID']); // Use NetID as the password
+    $username = trim($_POST['NetID']); // 
+    $password = trim($_POST['Pass']); // 
 
     if (!empty($username) && !empty($password)) {
         // Query to check user credentials
-        $stmt = $conn->prepare("SELECT NetID, Email FROM mytable WHERE Email = ? AND NetID = ?");
-        $stmt->bind_param("ss", $username, $password);
+        $conn = new mysqli($host, $dbuser, $dbpass, $dbname);
+        $sql = "SELECT NetID, Pass FROM mytable WHERE NetID = '$username' AND Pass = '$password'";
+
+
+
+        //$stmt = $conn->prepare("SELECT NetID, Email FROM mytable WHERE Email = ? AND NetID = ?");
+        //$stmt->bind_param("ss", $username, $password);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -129,10 +134,10 @@ $conn->close();
             <p class="error-message"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
         <form method="POST" action="login.php">
-            <label for="Email">Username:</label>
-            <input type="text" id="Email" name="Email" required>
-            <label for="NetID">Password:</label>
-            <input type="password" id="NetID" name="NetID" required>
+            <label for="NetID">Username:</label>
+            <input type="text" id="NetID" name="NetID" required>
+            <label for="Pass">Password:</label>
+            <input type="password" id="Pass" name="Pass" required>
             <button type="submit">Login</button>
         </form>
     </div>
