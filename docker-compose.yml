@@ -8,7 +8,7 @@ services:
     volumes:
       - /Users/katy/Documents/GitHub/Project-Finder:/var/www/html # Mount the correct directory containing your PHP files
     depends_on:
-      - db
+      - injection.php
     command: >
       bash -c "docker-php-ext-install mysqli && apache2-foreground"
 

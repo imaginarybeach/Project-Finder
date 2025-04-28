@@ -24,14 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($username) && !empty($password)) {
         // Query to check user credentials
         $conn = new mysqli($host, $dbuser, $dbpass, $dbname);
-        $sql = "SELECT NetID, Pass FROM mytable WHERE NetID = '$username' AND Pass = '$password'";
-
-
-
+        $sql = "SELECT NetID, Pass FROM STUDENT WHERE NetID = '$username' AND Pass = '$password'";
         //$stmt = $conn->prepare("SELECT NetID, Email FROM mytable WHERE Email = ? AND NetID = ?");
         //$stmt->bind_param("ss", $username, $password);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $result = $conn->query($sql);
 
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
@@ -43,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = "Invalid email or NetID.";
         }
 
-        $stmt->close();
+        //$conn->close();
     } else {
         $error = "Please fill in all fields.";
     }
@@ -133,11 +129,11 @@ $conn->close();
         <?php if ($error): ?>
             <p class="error-message"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
-        <form method="POST" action="login.php">
+        <form method="POST" action="injection.php">
             <label for="NetID">Username:</label>
             <input type="text" id="NetID" name="NetID" required>
             <label for="Pass">Password:</label>
-            <input type="password" id="Pass" name="Pass" required>
+            <input type="text" id="Pass" name="Pass" required>
             <button type="submit">Login</button>
         </form>
     </div>

@@ -1,0 +1,1 @@
+docker exec -it project_finder_db mysql -u root -p

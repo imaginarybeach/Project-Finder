@@ -14,17 +14,17 @@ if ($conn->connect_error) {
 }
 
 // Your database queries here
-$sql = "SELECT * FROM student-users";
+$sql = "SELECT * FROM STUDENT";
 $result = $conn->query($sql);
 
-// Process the results
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        echo "ID: " . $row["id"]. " - Email: " . $row["email"]. "<br>";
-    }
-} else {
-    echo "No results found";
-}
+// // Process the results
+// if ($result->num_rows > 0) {
+//     while($row = $result->fetch_assoc()) {
+//         echo "ID: " . $row["id"]. " - Email: " . $row["email"]. "<br>";
+//     }
+// } else {
+//     echo "No results found";
+// }
 
 $conn->close();
 ?>
