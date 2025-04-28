@@ -1,45 +1,53 @@
 <?php
-// Start session
+
 session_start();
 
-// Initialize variables
 $error = '';
-// Database connection
-$host = 'db'; // Use 'localhost' if the database is hosted locally
-$dbname = 'Project-Finder'; // Replace with your database name
-$dbuser = 'root'; // Root user of the database
-$dbpass = 'rooty'; // Replace with the root user's password (leave empty if no password is set)
+$success = '';
+
+$host = 'db'; // connection to docker
+$dbname = 'Project-Finder'; // db name
+$dbuser = 'root'; // db admin
+$dbpass = 'rooty'; // db password
 
 $conn = new mysqli($host, $dbuser, $dbpass, $dbname);
 
-// Check connection
+//check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// log in user
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['NetID']); // 
-    $password = trim($_POST['Pass']); // 
+    $currentPassword = trim($_POST['CurrentPass']); //
+    $newPassword = trim($_POST['NewPass']); //
+    $confirmPassword = trim($_POST['ConfirmPass']); //
 
-    if (!empty($username) && !empty($password)) {
-        // Query to check user credentials
-        $conn = new mysqli($host, $dbuser, $dbpass, $dbname);
-        $sql = "SELECT NetID, Pass FROM STUDENT WHERE NetID = '$username' AND Pass = '$password'";
-        //$stmt = $conn->prepare("SELECT NetID, Email FROM mytable WHERE Email = ? AND NetID = ?");
-        //$stmt->bind_param("ss", $username, $password);
-        $result = $conn->query($sql);
-
-        if ($result->num_rows === 1) {
-            $user = $result->fetch_assoc();
-            $_SESSION['NetID'] = $user['NetID'];
-            $_SESSION['Email'] = $user['Email'];
-            header("Location: dashboard.php");
-            exit;
+    if (!empty($username) && !empty($currentPassword) && !empty($newPassword) && !empty($confirmPassword)) {
+        // check if new passwords match
+        if ($newPassword !== $confirmPassword) {
+            $error = "New passwords do not match.";
         } else {
-            $error = "Invalid email or NetID.";
-        }
 
-        //$conn->close();
+            //unsecure sql code from the slides
+            $conn = new mysqli($host, $dbuser, $dbpass, $dbname);
+            $checkSql = "SELECT NetID FROM STUDENT WHERE NetID = '$username' AND Pass = '$currentPassword'";
+            $checkResult = $conn->query($checkSql);
+            
+            if ($checkResult->num_rows === 1) {
+
+                $updateSql = "UPDATE STUDENT SET Pass = '$newPassword' WHERE NetID = '$username'";
+                
+                if ($conn->query($updateSql) === TRUE) {
+                    $success = "Password changed successfully!";
+                } else {
+                    $error = "Error updating password: " . $conn->error;
+                }
+            } else {
+                $error = "Invalid NetID or current password.";
+            }
+        }
     } else {
         $error = "Please fill in all fields.";
     }
@@ -53,8 +61,12 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Change Password</title>
     <style>
+
+        /* css code from online resources customized for our project 
+        https://www.w3schools.com/css/
+        */
         body {
             font-family: Arial, sans-serif;
             background-color: #585A7C;
@@ -66,7 +78,7 @@ $conn->close();
             height: 100vh;
         }
 
-        .login-container {
+        .password-container {
             background: #ffffff;
             padding: 20px 30px;
             border-radius: 8px;
@@ -75,25 +87,25 @@ $conn->close();
             width: 300px;
         }
 
-        .login-container h2 {
+        .password-container h2 {
             font-size: 2rem;
             margin-bottom: 20px;
             color: #333;
         }
 
-        .login-container form {
+        .password-container form {
             display: flex;
             flex-direction: column;
         }
 
-        .login-container label {
+        .password-container label {
             margin-bottom: 5px;
             text-align: left;
             font-size: 0.9rem;
             color: #555;
         }
 
-        .login-container input {
+        .password-container input {
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
@@ -101,7 +113,7 @@ $conn->close();
             font-size: 1rem;
         }
 
-        .login-container button {
+        .password-container button {
             padding: 10px;
             background-color: #9092C8;
             color: #fff;
@@ -111,7 +123,7 @@ $conn->close();
             cursor: pointer;
         }
 
-        .login-container button:hover {
+        .password-container button:hover {
             background-color: #8082B4;
         }
 
@@ -121,20 +133,36 @@ $conn->close();
             font-size: 0.9rem;
         }
         
+        .success-message {
+            color: green;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
+<!-- code snippets from online resources- 
+ https://www.w3schools.com/tags/tag_label.asp 
+ https://www.w3schools.com/php/php_echo_print.asp
+ -->
 <body>
-    <div class="login-container">
-        <h2>Log In</h2>
+    <div class="password-container">
+        <h2>Change Password</h2>
         <?php if ($error): ?>
             <p class="error-message"><?php echo htmlspecialchars($error); ?></p>
+        <?php endif; ?>
+        <?php if ($success): ?>
+            <p class="success-message"><?php echo htmlspecialchars($success); ?></p>
         <?php endif; ?>
         <form method="POST" action="injection.php">
             <label for="NetID">Username:</label>
             <input type="text" id="NetID" name="NetID" required>
-            <label for="Pass">Password:</label>
-            <input type="text" id="Pass" name="Pass" required>
-            <button type="submit">Login</button>
+            <label for="CurrentPass">Current Password:</label>
+            <input type="text" id="CurrentPass" name="CurrentPass" required>
+            <label for="NewPass">New Password:</label>
+            <input type="text" id="NewPass" name="NewPass" required>
+            <label for="ConfirmPass">Confirm New Password:</label>
+            <input type="text" id="ConfirmPass" name="ConfirmPass" required>
+            <button type="submit">Change Password</button>
         </form>
     </div>
 </body>

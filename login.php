@@ -1,21 +1,18 @@
 <?php
-// Start session
 session_start();
-
-// Initialize variables
 $error = '';
 
-// Database connection
-$host = 'db'; // Use 'localhost' if the database is hosted locally
-$dbname = 'Project-Finder'; 
-$dbuser = 'root'; 
-$dbpass = 'rooty'; 
+$host = 'db'; // docker
+$dbname = 'Project-Finder'; //name of db
+$dbuser = 'root'; // admin user
+$dbpass = 'rooty'; //admin pass
 
 // Create connection
 try {
+    // mysqli code from the slides
     $conn = new mysqli($host, $dbuser, $dbpass, $dbname);
-    
-    // Check connection
+
+    // error handling for debugging https://www.w3schools.com/php/func_mysqli_connect_error.asp
     if ($conn->connect_error) {
         throw new Exception("Connection failed: " . $conn->connect_error);
     }
@@ -25,7 +22,7 @@ try {
         $password = trim($_POST['Pass']);
         
         if (!empty($username) && !empty($password)) {
-            // Proper prepared statement to prevent SQL injection
+            // prevents SQL injection
             $sql = "SELECT NetID, Pass FROM STUDENT WHERE NetID = ?";
             
             if ($stmt = $conn->prepare($sql)) {
@@ -35,12 +32,9 @@ try {
                 
                 if ($result->num_rows === 1) {
                     $user = $result->fetch_assoc();
-                    
-                    // In production, you should use password_verify() to check hashed passwords
-                    // This is just a temporary solution until passwords are properly hashed
                     if ($user['Pass'] === $password) {
                         $_SESSION['NetID'] = $user['NetID'];
-                        header("Location: dashboard.php");
+                        header("Location: myprofile.php");
                         exit;
                     } else {
                         $error = "Invalid username or password.";
@@ -56,8 +50,10 @@ try {
             $error = "Please fill in all fields.";
         }
     }
+
+    //https://www.php.net/manual/en/function.error-log.php
+    // error handling for debugging
 } catch (Exception $e) {
-    // Log the error to a proper log file (not displayed to users)
     error_log($e->getMessage());
     $error = "A system error occurred. Please try again later.";
 } finally {
@@ -144,6 +140,10 @@ try {
 <body>
     <div class="login-container">
         <h2>Log In</h2>
+        <!-- code snippets from online resources- 
+ https://www.w3schools.com/tags/tag_label.asp 
+ https://www.w3schools.com/php/php_echo_print.asp
+ -->
         <?php if ($error): ?>
             <p class="error-message"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
