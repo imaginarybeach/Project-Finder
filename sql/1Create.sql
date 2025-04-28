@@ -2,7 +2,11 @@
 CREATE TABLE STUDENT (
   -- Enter each entity, data type, characters, and any additional restrictions
     NetID CHAR(9) PRIMARY KEY,
-    Pass VARCHAR(255) NOT NULL,
+    Pass VARCHAR(50) NOT NULL CHECK (
+      LENGTH(Pass) BETWEEN 10 AND 50 AND
+      Pass NOT LIKE '%,%' AND
+      Pass NOT LIKE '%#%'
+)
     Email VARCHAR(255) NOT NULL,
     Phone VARCHAR(15),
     Name VARCHAR(255) NOT NULL,
