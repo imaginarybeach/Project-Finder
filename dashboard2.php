@@ -1,14 +1,12 @@
 <?php
 include 'navbar.php';
 
-// Database connection
-$servername = "localhost";
-$username = "your_username";
-$password = "your_password";
-$dbname = "your_database";
+$host = 'db'; 
+$dbname = 'Project-Finder'; 
+$dbuser = 'root'; 
+$dbpass = 'rooty'; 
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($host, $dbuser, $dbpass, $dbname);
 
 // Check connection
 if ($conn->connect_error) {

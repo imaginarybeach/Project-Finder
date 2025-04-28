@@ -1,1 +1,5 @@
-log out
+<?php
+
+    header("Location: index.php");
+
+?>

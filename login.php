@@ -4,47 +4,67 @@ session_start();
 
 // Initialize variables
 $error = '';
+
 // Database connection
 $host = 'db'; // Use 'localhost' if the database is hosted locally
-$dbname = 'Project-Finder'; // Replace with your database name
-$dbuser = 'root'; // Root user of the database
-$dbpass = 'rooty'; // Replace with the root user's password (leave empty if no password is set)
+$dbname = 'Project-Finder'; 
+$dbuser = 'root'; 
+$dbpass = 'rooty'; 
 
-$conn = new mysqli($host, $dbuser, $dbpass, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['Email']); // Use email as the username
-    $password = trim($_POST['NetID']); // Use NetID as the password
-
-    if (!empty($username) && !empty($password)) {
-        // Query to check user credentials
-        $stmt = $conn->prepare("SELECT NetID, Email FROM mytable WHERE Email = ? AND NetID = ?");
-        $stmt->bind_param("ss", $username, $password);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows === 1) {
-            $user = $result->fetch_assoc();
-            $_SESSION['NetID'] = $user['NetID'];
-            $_SESSION['Email'] = $user['Email'];
-            header("Location: dashboard.php");
-            exit;
+// Create connection
+try {
+    $conn = new mysqli($host, $dbuser, $dbpass, $dbname);
+    
+    // Check connection
+    if ($conn->connect_error) {
+        throw new Exception("Connection failed: " . $conn->connect_error);
+    }
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $username = trim($_POST['NetID']);
+        $password = trim($_POST['Pass']);
+        
+        if (!empty($username) && !empty($password)) {
+            // Proper prepared statement to prevent SQL injection
+            $sql = "SELECT NetID, Pass FROM STUDENT WHERE NetID = ?";
+            
+            if ($stmt = $conn->prepare($sql)) {
+                $stmt->bind_param("s", $username);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                
+                if ($result->num_rows === 1) {
+                    $user = $result->fetch_assoc();
+                    
+                    // In production, you should use password_verify() to check hashed passwords
+                    // This is just a temporary solution until passwords are properly hashed
+                    if ($user['Pass'] === $password) {
+                        $_SESSION['NetID'] = $user['NetID'];
+                        header("Location: dashboard.php");
+                        exit;
+                    } else {
+                        $error = "Invalid username or password.";
+                    }
+                } else {
+                    $error = "Invalid username or password.";
+                }
+                $stmt->close();
+            } else {
+                throw new Exception("Database query error: " . $conn->error);
+            }
         } else {
-            $error = "Invalid email or NetID.";
+            $error = "Please fill in all fields.";
         }
-
-        $stmt->close();
-    } else {
-        $error = "Please fill in all fields.";
+    }
+} catch (Exception $e) {
+    // Log the error to a proper log file (not displayed to users)
+    error_log($e->getMessage());
+    $error = "A system error occurred. Please try again later.";
+} finally {
+    if (isset($conn)) {
+        $conn->close();
     }
 }
-
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -119,7 +139,6 @@ $conn->close();
             margin-bottom: 15px;
             font-size: 0.9rem;
         }
-        
     </style>
 </head>
 <body>
@@ -128,11 +147,11 @@ $conn->close();
         <?php if ($error): ?>
             <p class="error-message"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
-        <form method="POST" action="login.php">
-            <label for="Email">Username:</label>
-            <input type="text" id="Email" name="Email" required>
-            <label for="NetID">Password:</label>
-            <input type="password" id="NetID" name="NetID" required>
+        <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+            <label for="NetID">Username:</label>
+            <input type="text" id="NetID" name="NetID" required>
+            <label for="Pass">Password:</label>
+            <input type="password" id="Pass" name="Pass" required>
             <button type="submit">Login</button>
         </form>
     </div>

@@ -1,14 +1,14 @@
 <?php
 include 'navbar.php';
 // Start the session
-session_start();
 
 // Dummy user data (replace with database data in a real application)
 $user = [
-    'username' => 'katy123',
-    'email' => 'katy@example.com',
-    'full_name' => 'Katy Soddy',
-    'bio' => 'Description about Katy Soddy.',
+    'username' => $_SESSION['NetID'],
+    'email' => $_SESSION['Email'],
+    'full_name' => $_SESSION['Name'],
+    'phone' => $_SESSION['Phone'],
+    'pronouns' => $_SESSION['Pronouns'],
 ];
 ?>
 
@@ -65,7 +65,8 @@ $user = [
             <h1><?php echo htmlspecialchars($user['full_name']); ?></h1>
             <p>@<?php echo htmlspecialchars($user['username']); ?></p>
             <p><?php echo htmlspecialchars($user['email']); ?></p>
-            <p><?php echo htmlspecialchars($user['bio']); ?></p>
+            <p><?php echo htmlspecialchars($user['phone']); ?></p>
+            <p><?php echo htmlspecialchars($user['pronouns']); ?></p>
         </div>
     </div>
 </body>
