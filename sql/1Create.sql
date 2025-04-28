@@ -2,7 +2,7 @@
 CREATE TABLE STUDENT (
   -- Enter each entity, data type, characters, and any additional restrictions
     NetID CHAR(9) PRIMARY KEY,
-    Password VARCHAR(255) NOT NULL,
+    Pass VARCHAR(255) NOT NULL,
     Email VARCHAR(255) NOT NULL,
     Phone VARCHAR(15),
     Name VARCHAR(255) NOT NULL,
