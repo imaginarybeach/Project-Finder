@@ -1,15 +1,49 @@
 <?php
+session_start();
 include 'navbar.php';
 // Start the session
 
-// Dummy user data (replace with database data in a real application)
-$user = [
-    'username' => $_SESSION['NetID'],
-    'email' => $_SESSION['Email'],
-    'full_name' => $_SESSION['Name'],
-    'phone' => $_SESSION['Phone'],
-    'pronouns' => $_SESSION['Pronouns'],
-];
+// Check if user is logged in
+if (isset($_SESSION['NetID'])) {
+    $netID = $_SESSION['NetID'];
+
+    // Database connection (replace with your actual database credentials)
+    $servername = "db";
+    $username = "root";
+    $password = "rooty";
+    $dbname = "Project-Finder";
+
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Query to fetch user data based on NetID
+    $stmt = $conn->prepare("SELECT NetID, Email, Phone, Name, Pronouns FROM STUDENT WHERE NetID = ?");
+    $stmt->bind_param("s", $netID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        // Fetch user data
+        $user = $result->fetch_assoc();
+    } else {
+        // Handle case where no user is found with that NetID
+        echo "No user found with NetID: " . htmlspecialchars($netID);
+        exit();
+    }
+
+    // Close the statement and connection
+    $stmt->close();
+    $conn->close();
+} else {
+    // Redirect to login page if NetID is not set in session
+    header('Location: login.php');
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -62,11 +96,11 @@ $user = [
 <body>
     <div class="profile-container">
         <div class="profile-info">
-            <h1><?php echo htmlspecialchars($user['full_name']); ?></h1>
-            <p>@<?php echo htmlspecialchars($user['username']); ?></p>
-            <p><?php echo htmlspecialchars($user['email']); ?></p>
-            <p><?php echo htmlspecialchars($user['phone']); ?></p>
-            <p><?php echo htmlspecialchars($user['pronouns']); ?></p>
+            <h1><?php echo htmlspecialchars($user['Name']); ?></h1>
+            <p><strong>NetID:</strong> <?php echo htmlspecialchars($user['NetID']); ?></p>
+            <p><strong>Email:</strong> <?php echo htmlspecialchars($user['Email']); ?></p>
+            <p><strong>Phone:</strong> <?php echo htmlspecialchars($user['Phone'] ?? 'Not provided'); ?></p>
+            <p><strong>Pronouns:</strong> <?php echo htmlspecialchars($user['Pronouns'] ?? 'Not provided'); ?></p>
         </div>
     </div>
 </body>
