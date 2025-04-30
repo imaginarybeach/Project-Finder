@@ -1,6 +1,11 @@
 <?php
 include 'navbar.php';
 
+// Start session if not already started
+// if (session_status() == PHP_SESSION_NONE) {
+//     session_start();
+// }
+
 $host = 'db'; 
 $dbname = 'Project-Finder'; 
 $dbuser = 'root'; 
@@ -11,6 +16,41 @@ $conn = new mysqli($host, $dbuser, $dbpass, $dbname);
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
+}
+
+// Process join request if form is submitted
+if (isset($_POST['join_project'])) {
+    $project_id = $_POST['project_id'];
+    
+    // Use session NetID or fallback to hardcoded value
+    $user_id = isset($_SESSION['netID']) ? $_SESSION['netID'] : 'kas210009';
+    
+    // Check if user is already in the project
+    $check_sql = "SELECT * FROM WORKS_ON WHERE NetID = ? AND PID = ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("si", $user_id, $project_id);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
+    
+    if ($check_result->num_rows > 0) {
+        $join_message = "You are already a member of this project.";
+        $join_status = "warning";
+    } else {
+        // Add user to WORKS_ON table
+        $insert_sql = "INSERT INTO WORKS_ON (NetID, PID) VALUES (?, ?)";
+        $insert_stmt = $conn->prepare($insert_sql);
+        $insert_stmt->bind_param("si", $user_id, $project_id);
+        
+        if ($insert_stmt->execute()) {
+            $join_message = "You have successfully joined this project!";
+            $join_status = "success";
+        } else {
+            $join_message = "Error: " . $insert_stmt->error;
+            $join_status = "error";
+        }
+        $insert_stmt->close();
+    }
+    $check_stmt->close();
 }
 
 // Get projects from database
@@ -27,8 +67,8 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-// Current user's netID
-$id = 'kas210009';
+// Current user's netID (from session or hardcoded)
+$id = isset($_SESSION['netID']) ? $_SESSION['netID'] : 'kas210009';
 
 $conn->close();
 ?>
@@ -125,11 +165,37 @@ $conn->close();
       padding: 40px;
       color: #666;
     }
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+    .alert-error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
   </style>
 </head>
 <body>
   <div class="project-container">
     <h1>Available Projects</h1>
+    
+    <?php if (isset($join_message)): ?>
+      <div class="alert alert-<?= $join_status ?>">
+        <?= $join_message ?>
+      </div>
+    <?php endif; ?>
     
     <?php if (count($listings) > 0): ?>
       <?php foreach ($listings as $listing): ?>
@@ -149,7 +215,10 @@ $conn->close();
             <span class="meta-item"><strong>Date Listed:</strong> <?= date('F j, Y', strtotime($listing['Date_posted'])) ?></span>
           </div>
           
-          <button class="join-button" onclick="handleJoin(<?= $listing['PID'] ?>)">Join Project</button>
+          <form method="POST" action="">
+            <input type="hidden" name="project_id" value="<?= $listing['PID'] ?>">
+            <button type="submit" name="join_project" class="join-button">Join Project</button>
+          </form>
         </div>
       <?php endforeach; ?>
     <?php else: ?>
@@ -159,27 +228,5 @@ $conn->close();
       </div>
     <?php endif; ?>
   </div>
-
-  <script>
-    function handleJoin(id) {
-      // You can replace this with an AJAX call to join the project
-      fetch(`/api/join-project.php?project_id=${id}&user_id=<?= $id ?>`, {
-        method: 'POST',
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('You have successfully joined this project!');
-          // Optionally refresh the page or update the UI
-        } else {
-          alert('Error: ' + data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while trying to join the project.');
-      });
-    }
-  </script>
 </body>
 </html>
