@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   web:
     image: php:8.0-apache
@@ -6,24 +5,27 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - /Users/katy/Documents/GitHub/Project-Finder:/var/www/html # Mount the correct directory containing your PHP files
+      - .:/var/www/html
     depends_on:
-      - injection.php
+      - db
     command: >
       bash -c "docker-php-ext-install mysqli && apache2-foreground"
 
   db:
     image: mysql:8.0
     container_name: project_finder_db
+    restart: always
     ports:
       - "8889:3306"
     environment:
       MYSQL_ROOT_PASSWORD: rooty
-      MYSQL_ALLOW_EMPTY_PASSWORD: "true"  # Not needed if you set a root password
       MYSQL_DATABASE: Project-Finder
+      # Debug options:
+      MYSQL_LOG_CONSOLE: "true"
     volumes:
-      - ./sql:/docker-entrypoint-initdb.d # Keep this for database initialization scripts
-      - mysql_data:/var/lib/mysql # Define the named volume here
+      # Start with just the data volume, add others after we confirm it works
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
 
 volumes:
-  mysql_data: # Define the named volume here
+  mysql_data:
