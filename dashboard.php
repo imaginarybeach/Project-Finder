@@ -14,16 +14,16 @@ if ($conn->connect_error) {
 }
 
 // Get projects from database
-$sql = "SELECT p.*, u.netID, u.name as creator_name 
+$sql = "SELECT p.PID, p.Name, p.Description, p.Tag, p.Capacity, p.Date_posted, u.NetID, u.name as creator_name 
         FROM PROJECT p 
-        INNER JOIN users u ON p.netID = u.netID 
-        ORDER BY p.date_listed DESC";
+        INNER JOIN users u ON p.NetID = u.NetID 
+        ORDER BY p.Date_posted DESC";
 $result = $conn->query($sql);
 
 // Store projects in array
 $listings = [];
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
         $listings[] = $row;
     }
 }
@@ -137,20 +137,20 @@ $conn->close();
         <div class="listing">
           <div class="listing-header">
             <div>
-              <h2 class="listing-title"><?= htmlspecialchars($listing['title']) ?></h2>
-              <p class="listing-creator">Posted by: <?= htmlspecialchars($listing['creator_name']) ?> (<?= htmlspecialchars($listing['netID']) ?>)</p>
+              <h2 class="listing-title"><?= htmlspecialchars($listing['Name']) ?></h2>
+              <p class="listing-creator">Posted by: <?= htmlspecialchars($listing['creator_name']) ?> (<?= htmlspecialchars($listing['NetID']) ?>)</p>
             </div>
-            <div class="tag"><?= htmlspecialchars($listing['tag']) ?></div>
+            <div class="tag"><?= htmlspecialchars($listing['Tag']) ?></div>
           </div>
           
-          <p class="listing-description"><?= htmlspecialchars($listing['description']) ?></p>
+          <p class="listing-description"><?= htmlspecialchars($listing['Description']) ?></p>
           
           <div class="listing-meta">
-            <span class="meta-item"><strong>Capacity:</strong> <?= htmlspecialchars($listing['capacity']) ?></span>
-            <span class="meta-item"><strong>Date Listed:</strong> <?= date('F j, Y', strtotime($listing['date_listed'])) ?></span>
+            <span class="meta-item"><strong>Capacity:</strong> <?= htmlspecialchars($listing['Capacity']) ?></span>
+            <span class="meta-item"><strong>Date Listed:</strong> <?= date('F j, Y', strtotime($listing['Date_posted'])) ?></span>
           </div>
           
-          <button class="join-button" onclick="handleJoin(<?= $listing['id'] ?>)">Join Project</button>
+          <button class="join-button" onclick="handleJoin(<?= $listing['PID'] ?>)">Join Project</button>
         </div>
       <?php endforeach; ?>
     <?php else: ?>
