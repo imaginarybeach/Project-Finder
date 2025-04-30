@@ -14,10 +14,9 @@ if ($conn->connect_error) {
 }
 
 // Get projects from database
-$sql = "SELECT p.PID, p.Name, p.Description, p.Tag, p.Capacity, p.Date_posted, u.NetID, u.name as creator_name 
-        FROM PROJECT p 
-        INNER JOIN users u ON p.NetID = u.NetID 
-        ORDER BY p.Date_posted DESC";
+$sql = "SELECT PID, Name, Description, Tag, Capacity, Date_posted, NetID 
+        FROM PROJECT 
+        ORDER BY Date_posted DESC";
 $result = $conn->query($sql);
 
 // Store projects in array
@@ -138,7 +137,7 @@ $conn->close();
           <div class="listing-header">
             <div>
               <h2 class="listing-title"><?= htmlspecialchars($listing['Name']) ?></h2>
-              <p class="listing-creator">Posted by: <?= htmlspecialchars($listing['creator_name']) ?> (<?= htmlspecialchars($listing['NetID']) ?>)</p>
+              <p class="listing-creator">Posted by: <?= htmlspecialchars($listing['NetID']) ?></p>
             </div>
             <div class="tag"><?= htmlspecialchars($listing['Tag']) ?></div>
           </div>

@@ -1,61 +1,78 @@
 <?php
-// Include the database connection file
-//require_once 'db.php';
+// Database connection settings
+$host = 'db'; // Docker service name for MySQL
+$dbname = 'Project-Finder';
+$dbuser = 'root';
+$dbpass = 'rooty';
 
-// Start session
-session_start();
+// Create connection
+$conn = new mysqli($host, $dbuser, $dbpass, $dbname);
 
-// Initialize variables
-$error = '';
-$success = '';
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$error = $success = "";
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
-    $password = trim($_POST['password']);
-    $verifyPassword = trim($_POST['verify_password']);
-    $email = trim($_POST['email']);
+    $netid = isset($_POST['NetID']) ? trim($_POST['NetID']) : '';
+    $password = isset($_POST['Pass']) ? trim($_POST['Pass']) : '';
+    $verify_password = isset($_POST['VerifyPass']) ? trim($_POST['VerifyPass']) : '';
+    $email = isset($_POST['Email']) ? trim($_POST['Email']) : '';
+    $phone = isset($_POST['Phone']) ? trim($_POST['Phone']) : '';
+    $name = isset($_POST['Name']) ? trim($_POST['Name']) : '';
+    $pronouns = isset($_POST['Pronouns']) ? trim($_POST['Pronouns']) : '';
 
-    if (!empty($username) && !empty($password) && !empty($verifyPassword) && !empty($email)) {
-        if ($password === $verifyPassword) {
-            // Check if the username or email already exists
-            $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
-            $stmt->bind_param("ss", $username, $email);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($result->num_rows === 0) {
-                // Hash the password
-                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-                // Insert the new user into the database
-                $stmt = $conn->prepare("INSERT INTO users (username, password, email) VALUES (?, ?, ?)");
-                $stmt->bind_param("sss", $username, $hashedPassword, $email);
-
-                if ($stmt->execute()) {
-                    $success = "Account created successfully. You can now log in.";
-                } else {
-                    $error = "Error creating account. Please try again.";
-                }
-
-                $stmt->close();
-            } else {
-                $error = "Username or email already exists.";
-            }
-        } else {
-            $error = "Passwords do not match.";
-        }
+    // Check if all required fields are filled
+    if (empty($netid) || empty($password) || empty($verify_password) || empty($email) || empty($name)) {
+        $error = "Please fill in all required fields.";
+    } elseif ($password !== $verify_password) {
+        $error = "Passwords do not match.";
     } else {
-        $error = "Please fill in all fields.";
+        // Check if NetID or Email already exists
+        $stmt = $conn->prepare("SELECT NetID, Email FROM STUDENT WHERE NetID = ? OR Email = ?");
+        if (!$stmt) {
+            die("Prepare failed: (" . $conn->errno . ") " . $conn->error);
+        }
+
+        $stmt->bind_param("ss", $netid, $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 0) {
+            $stmt->close(); // Close the first statement
+
+            // Insert the new user
+            $stmt = $conn->prepare("INSERT INTO STUDENT (NetID, Pass, Email, Phone, Name, Pronouns) VALUES (?, ?, ?, ?, ?, ?)");
+            if (!$stmt) {
+                die("Prepare failed: (" . $conn->errno . ") " . $conn->error);
+            }
+
+            $stmt->bind_param("ssssss", $netid, $password, $email, $phone, $name, $pronouns);
+            if ($stmt->execute()) {
+                $success = "Account created successfully. You can now log in.";
+            } else {
+                $error = "Error creating account. Please try again.";
+            }
+            $stmt->close(); // Close the second statement
+        } else {
+            $error = "NetID or email already exists.";
+            $stmt->close(); // Close the first statement
+        }
     }
 }
+$conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Register - Project Finder</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -65,7 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            padding: 20px 0;
         }
 
         .register-container {
@@ -74,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             text-align: center;
-            width: 300px;
+            width: 350px;
         }
 
         .register-container h2 {
@@ -128,28 +146,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 15px;
             font-size: 0.9rem;
         }
+
+        .required-field::after {
+            content: " *";
+            color: red;
+        }
+
+        .optional-field {
+            color: #888;
+        }
+
+        .login-link {
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
     <div class="register-container">
-        <h2>Register</h2>
+        <h2>Project Finder Registration</h2>
         <?php if ($error): ?>
             <p class="error-message"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
         <?php if ($success): ?>
             <p class="success-message"><?php echo htmlspecialchars($success); ?></p>
         <?php endif; ?>
-        <form method="POST" action="">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+        <form method="POST" action="register.php">
+            <label for="netid">NetID:</label>
+            <input type="text" id="netid" name="NetID" required>
+            
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="Pass" required>
+            
             <label for="verify_password">Verify Password:</label>
-            <input type="password" id="verify_password" name="verify_password" required>
+            <input type="password" id="verify_password" name="VerifyPass" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="Email" required>
+            
+            <label for="phone">Phone:</label>
+            <input type="text" id="phone" name="Phone">
+            
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="Name" required>
+            
+            <label for="pronouns">Pronouns:</label>
+            <input type="text" id="pronouns" name="Pronouns">
+            
             <button type="submit">Register</button>
         </form>
+        <p class="login-link">Already have an account? <a href="login.php">Login here</a></p>
     </div>
 </body>
 </html>
