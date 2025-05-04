@@ -19,7 +19,7 @@ services:
       - "8889:3306"
     environment:
       MYSQL_ROOT_PASSWORD: rooty
-      MYSQL_DATABASE: Project-Finder
+      MYSQL_DATABASE: Project_Finder
       # Debug options:
       MYSQL_LOG_CONSOLE: "true"
     volumes:

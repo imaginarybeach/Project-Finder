@@ -11,7 +11,7 @@ if (isset($_SESSION['NetID'])) {
     $servername = "db";
     $username = "root";
     $password = "rooty";
-    $dbname = "Project-Finder";
+    $dbname = "Project_Finder";
 
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -99,6 +99,8 @@ if (isset($_SESSION['NetID'])) {
                      JOIN WORKS_ON w ON p.PID = w.PID 
                      WHERE w.NetID = ?
                      ORDER BY p.Date_posted DESC";
+
+                     
     
     $projectsStmt = $conn->prepare($projectsQuery);
     $projectsStmt->bind_param("ss", $netID, $netID);
@@ -120,6 +122,7 @@ if (isset($_SESSION['NetID'])) {
         }
         
         $project['languages'] = $languages;
+        
         $userProjects[] = $project;
         
         $languagesStmt->close();

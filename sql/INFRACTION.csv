@@ -1,51 +1,51 @@
-"InfractionID,Description"
-"1,Plagiarism from other projects"
-"2,Missed deadlines repeatedly"
-"3,Inappropriate behavior in team meetings"
-"4,Unauthorized access to project files"
-"5,Failure to contribute to group work"
-"6,Unauthorized code sharing"
-"7,Project abandonment"
-"8,Disruptive communication"
-"9,Code of conduct violation"
-"10,Academic dishonesty"
-"11,Missed team meetings"
-"12,Incomplete work submissions"
-"13,Harassment"
-"14,Plagiarism in documentation"
-"15,Inappropriate comments"
-"16,Copyright violation"
-"17,Unauthorized repo access"
-"18,Ethics violation"
-"19,Harassment"
-"20,Discrimination"
-"21,Project sabotage"
-"22,Unauthorized project changes"
-"23,Data falsification"
-"24,Intellectual property theft"
-"25,Property destruction"
-"26,Unauthorized collaboration"
-"27,Excessive absenteeism"
-"28,Work avoidance"
-"29,Hazing"
-"30,Professionalism violation"
-"31,Ethics violation"
-"32,Unauthorized tool usage"
-"33,License violation"
-"34,Confidentiality breach"
-"35,Resource misuse"
-"36,Unauthorized account sharing"
-"37,False reporting"
-"38,Cheating"
-"39,Submission tampering"
-"40,Unauthorized assistance"
-"41,Intellectual property theft"
-"42,Project scope violation"
-"43,Cheating"
-"44,Deadline manipulation"
-"45,Property destruction"
-"46,Abuse of Power"
-"47,False reporting"
-"48,Work Avoidance"
-"49,Intellectual property theft"
-"50,Team exclusion"
+InfractionID,Description
+1,Plagiarism from other projects
+2,Missed deadlines repeatedly
+3,Inappropriate behavior in team meetings
+4,Unauthorized access to project files
+5,Failure to contribute to group work
+6,Unauthorized code sharing
+7,Project abandonment
+8,Disruptive communication
+9,Code of conduct violation
+10,Academic dishonesty
+11,Missed team meetings
+12,Incomplete work submissions
+13,Harassment
+14,Plagiarism in documentation
+15,Inappropriate comments
+16,Copyright violation
+17,Unauthorized repo access
+18,Ethics violation
+19,Harassment
+20,Discrimination
+21,Project sabotage
+22,Unauthorized project changes
+23,Data falsification
+24,Intellectual property theft
+25,Property destruction
+26,Unauthorized collaboration
+27,Excessive absenteeism
+28,Work avoidance
+29,Hazing
+30,Professionalism violation
+31,Ethics violation
+32,Unauthorized tool usage
+33,License violation
+34,Confidentiality breach
+35,Resource misuse
+36,Unauthorized account sharing
+37,False reporting
+38,Cheating
+39,Submission tampering
+40,Unauthorized assistance
+41,Intellectual property theft
+42,Project scope violation
+43,Cheating
+44,Deadline manipulation
+45,Property destruction
+46,Abuse of Power
+47,False reporting
+48,Work Avoidance
+49,Intellectual property theft
+50,Team exclusion

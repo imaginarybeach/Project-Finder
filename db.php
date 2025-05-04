@@ -1,9 +1,9 @@
 <?php
-$servername = "localhost"; // Use localhost if running MySQL on the same machine
+$servername = "db"; // Use localhost if running MySQL on the same machine
 $port = 3306; // Default MySQL port
 $username = "root";
-$password = "root";
-$dbname = "Project-Finder";
+$password = "rooty";
+$dbname = "Project_Finder";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);

@@ -1,5 +1,5 @@
 -- Create the table & name from CSV file
-CREATE DATABASE Project_Finder;
+-- CREATE DATABASE Project_Finder;
 
 CREATE TABLE Project_Finder.STUDENT (
   -- Enter each entity, data type, characters, and any additional restrictions

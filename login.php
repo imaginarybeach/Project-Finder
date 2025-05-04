@@ -3,7 +3,7 @@ session_start();
 $error = '';
 
 $host = 'db'; // docker
-$dbname = 'Project-Finder'; //name of db
+$dbname = 'Project_Finder'; //name of db
 $dbuser = 'root'; // admin user
 $dbpass = 'rooty'; //admin pass
 

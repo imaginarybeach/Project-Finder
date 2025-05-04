@@ -1,7 +1,7 @@
 <?php
 // Database connection settings
 $host = 'db'; // Docker service name for MySQL
-$dbname = 'Project-Finder';
+$dbname = 'Project_Finder';
 $dbuser = 'root';
 $dbpass = 'rooty';
 
@@ -173,10 +173,10 @@ $conn->close();
         <?php endif; ?>
         <form method="POST" action="register.php">
             <label for="netid">NetID:</label>
-            <input type="text" id="netid" name="NetID" required>
+            <input type="text" id="netid" name="NetID" minlength="9" maxlength="9" required>
             
             <label for="password">Password:</label>
-            <input type="password" id="password" name="Pass" required>
+            <input type="password" id="password" name="Pass" minlength="10" maxlength="50" required>
             
             <label for="verify_password">Verify Password:</label>
             <input type="password" id="verify_password" name="VerifyPass" required>

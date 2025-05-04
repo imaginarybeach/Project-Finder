@@ -2,7 +2,7 @@ FROM mysql:latest
 
 # Environment variables for MySQL
 ENV MYSQL_ROOT_PASSWORD=rooty
-ENV MYSQL_DATABASE=Project-Finder
+ENV MYSQL_DATABASE=Project_Finder
 ENV MYSQL_USER=root
 ENV MYSQL_PASSWORD=rooty
 

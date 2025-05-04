@@ -6,7 +6,7 @@ $error = '';
 $success = '';
 
 $host = 'db'; // connection to docker
-$dbname = 'Project-Finder'; // db name
+$dbname = 'Project_Finder'; // db name
 $dbuser = 'root'; // db admin
 $dbpass = 'rooty'; // db password
 

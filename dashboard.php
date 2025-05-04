@@ -1,5 +1,7 @@
 <?php
+session_start();
 include 'navbar.php';
+
 
 // Start session if not already started
 // if (session_status() == PHP_SESSION_NONE) {
@@ -7,7 +9,7 @@ include 'navbar.php';
 // }
 
 $host = 'db'; 
-$dbname = 'Project-Finder'; 
+$dbname = 'Project_Finder'; 
 $dbuser = 'root'; 
 $dbpass = 'rooty'; 
 
@@ -23,8 +25,24 @@ if (isset($_POST['join_project'])) {
     $project_id = $_POST['project_id'];
     
     // Use session NetID or fallback to hardcoded value
-    $user_id = isset($_SESSION['netID']) ? $_SESSION['netID'] : 'kas210009';
+    $user_id = isset($_SESSION['NetID']) ? $_SESSION['NetID'] : 'kas210009';
+
+    // Check project capacity
+    $check_sql = "SELECT Capacity FROM PROJECT WHERE PID = ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("i", $project_id);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result()->fetch_assoc();
+    $capacity = $check_result["Capacity"];
     
+    // Get list of users in project
+    $check_sql = "SELECT * FROM WORKS_ON WHERE PID = ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("i", $project_id);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
+    $count = $check_result->num_rows;
+
     // Check if user is already in the project
     $check_sql = "SELECT * FROM WORKS_ON WHERE NetID = ? AND PID = ?";
     $check_stmt = $conn->prepare($check_sql);
@@ -33,7 +51,10 @@ if (isset($_POST['join_project'])) {
     $check_result = $check_stmt->get_result();
     
     if ($check_result->num_rows > 0) {
-        $join_message = "You are already a member of this project.";
+      $join_message = "You are already a member of this project.";
+      $join_status = "warning";
+    } elseif ($count >= $capacity) {
+        $join_message = "Project is already at maximum capacity.";
         $join_status = "warning";
     } else {
         // Add user to WORKS_ON table
@@ -68,7 +89,7 @@ if ($result && $result->num_rows > 0) {
 }
 
 // Current user's netID (from session or hardcoded)
-$id = isset($_SESSION['netID']) ? $_SESSION['netID'] : 'kas210009';
+$id = isset($_SESSION['NetID']) ? $_SESSION['NetID'] : 'kas210009';
 
 $conn->close();
 ?>
