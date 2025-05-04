@@ -75,18 +75,17 @@ if (isset($_POST['join_project'])) {
 }
 
 $tag_filter = "";
-if (isset($_POST["filter_projects"])) {
-  $tag_filter = $_POST["filter_value"];
+if (isset($_GET["filter_projects"])) {
+  $tag_filter = $_GET["filter_value"];
 }
-$tag_filter = "%" . $tag_filter . "%";
+$tag_like = "%" . $tag_filter . "%";
 
 // Get projects from database
 $sql = "SELECT PID, Name, Description, Tag, Capacity, Date_posted, NetID 
         FROM PROJECT WHERE Tag LIKE ?
         ORDER BY Date_posted DESC";
 $filter_stmt = $conn->prepare($sql);
-$filter_stmt->bind_param("s", $tag_filter);
-$filter_stmt->bind_param("s", $tag_filter);
+$filter_stmt->bind_param("s", $tag_like);
 $filter_stmt->execute();
 $result = $filter_stmt->get_result();
 
@@ -222,8 +221,8 @@ $conn->close();
   <div class="project-container">
     <h1>Available Projects</h1>
 
-    <form method="POST" action="">
-      <input type="text" name="filter_value" placeholder="search tag" style=" padding: 10px 25px" value="<?= $_POST["filter_value"] ?>">
+    <form method="GET" action="">
+      <input type="text" name="filter_value" placeholder="search tag" style=" padding: 10px 25px" value="<?= $tag_filter ?>">
       <button type="submit" name="filter_projects" class="join-button">Filter</button>
     </form>
     

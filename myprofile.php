@@ -281,6 +281,7 @@ if (isset($_SESSION['NetID'])) {
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
         }
         .project-card:hover {
             transform: translateY(-5px);
@@ -442,7 +443,9 @@ if (isset($_SESSION['NetID'])) {
             <?php else: ?>
                 <div class="projects-container">
                     <?php foreach($userProjects as $project): ?>
-                        <div class="project-card">
+                        <!-- pass project id to edit page -->
+                        <form name="edit_<?= $project['PID'] ?>" action="/editproject.php" hidden> <input type="hidden" name="project_id" value="<?= $project['PID'] ?>"> </form>
+                        <div class="project-card" onclick="document.forms['edit_<?= $project['PID'] ?>'].submit()">
                             <div class="project-header">
                                 <h3 class="project-title"><?php echo htmlspecialchars($project['Name']); ?></h3>
                                 <?php if($project['is_creator']): ?>
